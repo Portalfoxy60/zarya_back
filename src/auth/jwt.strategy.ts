@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
+import { Request } from 'express'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { IJwtPayload } from 'src/interfaces/jwt-payload.interface'
 import { UserService } from 'src/user/user.service'
@@ -17,7 +18,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
     const devMode = configService.get<boolean>('DEVELOPE_MODE') || false
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (req: Request): string | null => {
+          const token = req.cookies?.accessToken as unknown
+          return typeof token === 'string' ? token : null
+        },
+      ]),
       ignoreExpiration: devMode,
       secretOrKey: secret,
     })
@@ -27,7 +33,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     const { sub } = payload
     const user = await this.userService.findById(sub)
     if (!user) {
-      throw new UnauthorizedException()
+      throw new UnauthorizedException('Токен не валидный')
     }
     return user
   }

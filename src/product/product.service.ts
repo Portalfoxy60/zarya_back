@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common'
 import { CreateProductDto } from './dto/create-product.dto'
 import { UpdateProductDto } from './dto/update-product.dto'
 import { InjectRepository } from '@nestjs/typeorm'
@@ -27,8 +31,20 @@ export class ProductService {
     return this.productRepository.save(product)
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`
+  async update(id: number, updateProductDto: UpdateProductDto) {
+    const product = await this.productRepository.findOneBy({ id })
+    if (!product) {
+      throw new NotFoundException('Продукт не найден')
+    }
+    const category = await this.categoryRepository.findOneBy({
+      id: updateProductDto.categoryId,
+    })
+    if (!category) {
+      throw new NotFoundException('Категория не найдена')
+    }
+    this.productRepository.merge(product, updateProductDto)
+    product.category = category
+    return this.productRepository.save(product)
   }
 
   async findAll() {

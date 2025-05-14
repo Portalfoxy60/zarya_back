@@ -1,11 +1,27 @@
-import { Body, Controller, Post } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { LoginDto } from './dto/login.dto'
 import { RegisterDto } from './dto/register.dto'
+import { Response } from 'express'
+import { ConfigService } from '@nestjs/config'
+import { AuthGuard } from '@nestjs/passport'
+import { MeDto } from './dto/me.dto'
+import { IRequestWithUser } from 'src/interfaces/request-with-user.interface'
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private configService: ConfigService,
+  ) {}
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
@@ -13,7 +29,28 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() loginDto: LoginDto) {
-    return await this.authService.login(loginDto)
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const accessToken = await this.authService.login(loginDto)
+    const maxAge =
+      this.configService.get<number>('ACCESS_TOKEN_SECONDS') || 86400
+    const secure =
+      this.configService.get<boolean>('ACCESS_TOKEN_SECURE') || false
+
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: secure,
+      sameSite: 'lax',
+      maxAge: maxAge,
+    })
+    return { message: 'Login success' }
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('me')
+  getMe(@Req() req: IRequestWithUser): MeDto {
+    return new MeDto(req.user)
   }
 }

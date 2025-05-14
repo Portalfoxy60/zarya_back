@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module'
 import { ProductModule } from './product/product.module'
 import { CategoryModule } from './category/category.module'
 import { SubscribeModule } from './subscribe/subscribe.module';
+import { DateModule } from './date/date.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { SubscribeModule } from './subscribe/subscribe.module';
     ProductModule,
     CategoryModule,
     SubscribeModule,
+    DateModule,
   ],
   controllers: [AppController],
   providers: [AppService],

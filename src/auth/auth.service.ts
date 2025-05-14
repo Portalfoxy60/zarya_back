@@ -46,7 +46,7 @@ export class AuthService {
     return user
   }
 
-  async login(loginDto: LoginDto): Promise<{ accessToken: string }> {
+  async login(loginDto: LoginDto): Promise<string> {
     const user = await this.validateCredentials(loginDto)
     const payload: IJwtPayload = {
       sub: user.id,
@@ -54,7 +54,7 @@ export class AuthService {
       role: user.role,
     }
     const accessToken = this.jwtService.sign(payload)
-    return { accessToken }
+    return accessToken
   }
 
   private async checkEmailUnique(email?: string) {

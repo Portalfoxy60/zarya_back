@@ -6,18 +6,26 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
+  UseGuards,
 } from '@nestjs/common'
 import { SubscribeService } from './subscribe.service'
 import { CreateSubscribeDto } from './dto/create-subscribe.dto'
 import { UpdateSubscribeDto } from './dto/update-subscribe.dto'
+import { IRequestWithUser } from 'src/interfaces/request-with-user.interface'
+import { AuthGuard } from '@nestjs/passport'
 
-@Controller('subscribe')
+@Controller('subscribes')
 export class SubscribeController {
   constructor(private readonly subscribeService: SubscribeService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Post()
-  create(@Body() createSubscribeDto: CreateSubscribeDto) {
-    return this.subscribeService.create(createSubscribeDto)
+  create(
+    @Req() req: IRequestWithUser,
+    @Body() createSubscribeDto: CreateSubscribeDto,
+  ) {
+    return this.subscribeService.create(req.user, createSubscribeDto)
   }
 
   @Get()

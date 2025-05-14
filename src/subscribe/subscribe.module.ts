@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm'
 import { Subscribe } from './entities/subscribe.entity'
 import { User } from 'src/user/entities/user.entity'
 import { Product } from 'src/product/entities/product.entity'
+import { DateModule } from 'src/date/date.module'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Subscribe, User, Product])],
+  imports: [TypeOrmModule.forFeature([Subscribe, User, Product]), DateModule],
   controllers: [SubscribeController],
   providers: [SubscribeService],
 })
