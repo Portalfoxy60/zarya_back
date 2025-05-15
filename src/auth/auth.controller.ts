@@ -33,11 +33,13 @@ export class AuthController {
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const accessToken = await this.authService.login(loginDto)
     const maxAge =
       this.configService.get<number>('ACCESS_TOKEN_SECONDS') || 86400
     const secure =
       this.configService.get<boolean>('ACCESS_TOKEN_SECURE') || false
+
+    const user = await this.authService.validateCredentials(loginDto)
+    const accessToken = this.authService.generateToken(user)
 
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
@@ -45,7 +47,7 @@ export class AuthController {
       sameSite: 'lax',
       maxAge: maxAge,
     })
-    return { message: 'Login success' }
+    return new MeDto(user)
   }
 
   @UseGuards(AuthGuard('jwt'))

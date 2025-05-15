@@ -46,8 +46,7 @@ export class AuthService {
     return user
   }
 
-  async login(loginDto: LoginDto): Promise<string> {
-    const user = await this.validateCredentials(loginDto)
+  generateToken(user: User): string {
     const payload: IJwtPayload = {
       sub: user.id,
       email: user.email,
