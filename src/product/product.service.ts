@@ -56,7 +56,7 @@ export class ProductService {
     return `This action returns a #${id} product`
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`
+  async remove(id: number) {
+    return await this.productRepository.delete(id)
   }
 }
