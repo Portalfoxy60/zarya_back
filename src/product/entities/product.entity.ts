@@ -22,7 +22,7 @@ export class Product {
   @Column('decimal', { precision: 10, scale: 2 })
   price: number
 
-  @Column()
+  @Column({ nullable: true })
   image: string
 
   @ManyToOne(() => Category, (category) => category.products)

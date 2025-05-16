@@ -19,8 +19,9 @@ export class ProductService {
     private readonly categoryRepository: Repository<Category>,
   ) {}
 
-  async create(createProductDto: CreateProductDto) {
+  async create(createProductDto: CreateProductDto, imagePath: string) {
     const product = this.productRepository.create(createProductDto)
+    product.image = imagePath
     const category = await this.categoryRepository.findOneBy({
       id: createProductDto.categoryId,
     })
