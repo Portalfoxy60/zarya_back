@@ -28,7 +28,7 @@ export class ProductController {
     @Body() createProductDto: CreateProductDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.productService.create(createProductDto, file.path)
+    return this.productService.create(createProductDto, file.filename)
   }
 
   @Get()
