@@ -21,6 +21,21 @@ export class Subscribe {
   @Column({ type: 'enum', enum: ESubscribeType })
   type: ESubscribeType
 
+  @Column()
+  street: string
+
+  @Column()
+  building: number
+
+  @Column()
+  flat: number
+
+  @Column()
+  floor: number
+
+  @Column()
+  deliveryTime: string
+
   @ManyToOne(() => User)
   user: User
 

@@ -12,9 +12,9 @@ import { LoginDto } from './dto/login.dto'
 import { RegisterDto } from './dto/register.dto'
 import { Response } from 'express'
 import { ConfigService } from '@nestjs/config'
-import { AuthGuard } from '@nestjs/passport'
 import { MeDto } from './dto/me.dto'
 import { IRequestWithUser } from 'src/interfaces/request-with-user.interface'
+import { JwtAuthGuard } from 'src/guards/jwt-auth.guard'
 
 @Controller('auth')
 export class AuthController {
@@ -34,7 +34,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const maxAge =
-      this.configService.get<number>('ACCESS_TOKEN_SECONDS') || 86400
+      this.configService.get<number>('ACCESS_TOKEN_SECONDS') || 86400000
     const secure =
       this.configService.get<boolean>('ACCESS_TOKEN_SECURE') || false
 
@@ -45,12 +45,12 @@ export class AuthController {
       httpOnly: true,
       secure: secure,
       sameSite: 'lax',
-      maxAge: maxAge,
+      maxAge: maxAge * 1000,
     })
     return new MeDto(user)
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @Get('me')
   getMe(@Req() req: IRequestWithUser): MeDto {
     return new MeDto(req.user)

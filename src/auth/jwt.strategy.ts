@@ -18,12 +18,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
     const devMode = configService.get<boolean>('DEVELOPE_MODE') || false
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        (req: Request): string | null => {
-          const token = req.cookies?.accessToken as unknown
-          return typeof token === 'string' ? token : null
-        },
-      ]),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: devMode,
       secretOrKey: secret,
     })

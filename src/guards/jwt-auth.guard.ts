@@ -1,22 +1,20 @@
 import { ExecutionContext, Injectable } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { Request } from 'express'
-import { User } from 'src/user/entities/user.entity'
 
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
-  handleRequest<TUser = any>(
-    err: unknown,
-    user: User,
-    info: unknown,
-    context: ExecutionContext,
-  ): TUser {
+  getRequest(context: ExecutionContext): Request {
     const req = context.switchToHttp().getRequest<Request>()
 
-    if (!req.headers.authorization && req.cookies?.accessToken) {
-      req.headers.authorization = `Bearer ${req.cookies.accessToken}`
+    const cookies = req.cookies as Record<string, string>
+    const tokenFromCookie: string | undefined = cookies?.['accessToken']
+    const authHeader = req.headers['authorization']
+
+    if (!authHeader && tokenFromCookie) {
+      req.headers['authorization'] = `Bearer ${tokenFromCookie}`
     }
 
-    return super.handleRequest(err, user, info, context)
+    return req
   }
 }

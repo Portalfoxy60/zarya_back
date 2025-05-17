@@ -56,6 +56,11 @@ export class SubscribeService {
     const subscribes = dates.map((date) => {
       const subscribe = new Subscribe()
       subscribe.type = createSubscribeDto.type
+      subscribe.street = createSubscribeDto.street
+      subscribe.building = createSubscribeDto.building
+      subscribe.flat = createSubscribeDto.flat
+      subscribe.floor = createSubscribeDto.floor
+      subscribe.deliveryTime = createSubscribeDto.deliveryTime
       subscribe.user = user
       subscribe.date = date
       subscribe.product1 = product1
