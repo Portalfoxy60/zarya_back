@@ -1,0 +1,18 @@
+<h1>Здравствуйте!</h1>
+<p>Вы оформили доставку на адрес: {{street}} {{building}} - {{flat}}, {{floor}} этаж</p>
+<p>Время доставки: {{deliveryTime}}</p>
+<p>Список товаров:</p>
+<table>
+    <tr>
+        <th>#</th>
+        <th>Название</th>
+        <th>Количество</th>
+    </tr>
+    {{#each products}}
+        <tr>
+            <td>{{@index}}</td>
+            <td>{{product.name}}</td>
+            <td>{{quantity}}</td>
+        </tr>
+    {{/each}}
+</table>
